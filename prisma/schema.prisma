@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id  String @id @default(uuid())
+  username String @unique
+  password String
+  role     String @default("user")
+
+  transaksi Transaksi[]
+  presensi  Presensi[]
+}
+
+model Transaksi {
+  transaksi_id      String   @id @default(uuid())
+  user_id           String
+  total_harga       Float
+  nama_customer     String
+  tanggal_transaksi DateTime
+  nomor_telepon     String?
+  catatan           String?
+  metode_bayar      String
+  jumlah_bayar      Float
+  sisa_bayar        Float
+  status_studio     String
+  status_bayar      String
+
+  user            User               @relation(fields: [user_id], references: [user_id])
+  detailTransaksi Detail_Transaksi[]
+}
+
+model Detail_Transaksi {
+  detail_transaksi_id String @id @default(uuid())
+  transaksi_id        String
+  // nama_layanan_item   String
+  subtotal            Float
+  jumlah              Int
+  // sesi                String
+
+  transaksi             Transaksi               @relation(fields: [transaksi_id], references: [transaksi_id])
+  Detail_Transaksi_Sesi Detail_Transaksi_Sesi[]
+  Detail_Additional     Detail_Additional[]
+}
+
+model Sesi {
+  sesi_id String                  @id @default(uuid())
+  nama    String
+  harga   Int
+  details Detail_Transaksi_Sesi[]
+}
+
+model Detail_Transaksi_Sesi {
+  id                  String   @id @default(uuid())
+  detail_transaksi_id String
+  sesi_id             String
+  tanggal_sesi        DateTime
+
+  detailTransaksi Detail_Transaksi @relation(fields: [detail_transaksi_id], references: [detail_transaksi_id])
+  sesi            Sesi             @relation(fields: [sesi_id], references: [sesi_id])
+
+  @@unique([sesi_id, tanggal_sesi])
+}
+
+model Additional {
+  additional_id     String              @id @default(uuid())
+  nama              String
+  harga             Float
+  detailAdditionals Detail_Additional[]
+}
+
+model Detail_Additional {
+  id                  String @id @default(uuid())
+  detail_transaksi_id String
+  additional_id       String
+  jumlah              Int
+
+  detailTransaksi Detail_Transaksi @relation(fields: [detail_transaksi_id], references: [detail_transaksi_id])
+  additional      Additional       @relation(fields: [additional_id], references: [additional_id])
+}
+
+model Presensi {
+  id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [user_id])
+  userId    String
+  timestamp DateTime  @default(now())
+  status    String
+  clock_in  DateTime  @default(now())
+  clock_out DateTime?
+}
