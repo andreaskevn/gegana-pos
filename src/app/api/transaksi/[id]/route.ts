@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const authHeader = req.headers.get("authorization");
 
@@ -19,7 +19,7 @@ export async function PUT(
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as { user_id: string };
     const body = await req.json();
-    const transaksi_id = params.id;
+    const transaksi_id = (await params).id;
 
     const dataToUpdate: {
       jumlah_bayar?: number;
