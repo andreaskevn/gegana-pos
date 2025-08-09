@@ -75,17 +75,15 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
 
-    // Ambil parameter untuk filter dan pagination
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const startDate = searchParams.get("startDate");
     const endDate = searchParams.get("endDate");
-    const download = searchParams.get("download"); // Parameter baru untuk unduh PDF
+    const download = searchParams.get("download");
 
     const skip = (page - 1) * limit;
-
-    // Buat klausa 'where' dinamis berdasarkan filter tanggal
     const whereClause: any = {};
+
     if (startDate && endDate) {
       whereClause.tanggal_transaksi = {
         gte: new Date(startDate),
@@ -93,17 +91,21 @@ export async function GET(req: NextRequest) {
       };
     }
 
-    // Jika untuk unduhan, jangan gunakan pagination (skip/take)
-    const findManyOptions = {
+    // 2. Berikan tipe eksplisit pada findManyOptions
+    const findManyOptions: Prisma.TransaksiFindManyArgs = {
       where: whereClause,
       orderBy: { tanggal_transaksi: "desc" },
       include: {
-        /* ... include tetap sama ... */
+        detailTransaksi: {
+          include: {
+            Detail_Transaksi_Sesi: true,
+            Detail_Additional: true,
+          },
+        },
       },
-      ...(download !== "true" && { skip, take: limit }), // Terapkan pagination jika bukan untuk download
+      ...(download !== "true" && { skip, take: limit }),
     };
 
-    // Jalankan semua query secara bersamaan
     const [transaksi, totalTransaksi, aggregations] = await Promise.all([
       prisma.transaksi.findMany(findManyOptions),
       prisma.transaksi.count({ where: whereClause }),
