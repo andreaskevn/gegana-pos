@@ -16,103 +16,92 @@ async function main() {
   });
 
   // Buat sesi
-  const sesiPagi = await prisma.sesi.create({
+  const sesi1 = await prisma.sesi.create({
     data: {
-      nama: "Sesi 1 (09.00 - 12.00)",
+      nama: "Sesi 1 (11.00 - 13.00)",
       harga: 85000
     },
   });
 
-  const sesiSore = await prisma.sesi.create({
+  const sesi2 = await prisma.sesi.create({
     data: {
-      nama: "Sesi 2 (13.00 - 16.00)",
+      nama: "Sesi 2 (13.00 - 15.00)",
+      harga: 85000
+    },
+  });
+  const sesi3 = await prisma.sesi.create({
+    data: {
+      nama: "Sesi 3 (15.00 - 17.00)",
+      harga: 85000
+    },
+  });
+  const sesi4 = await prisma.sesi.create({
+    data: {
+      nama: "Sesi 4 (17.00 - 19.00)",
+      harga: 85000
+    },
+  });
+  const sesi5 = await prisma.sesi.create({
+    data: {
+      nama: "Sesi 5 (19.00 - 21.00)",
+      harga: 85000
+    },
+  });
+  const sesi6 = await prisma.sesi.create({
+    data: {
+      nama: "Sesi 6 (21.00 - 23.00)",
+      harga: 85000
+    },
+  });
+  const sesi7 = await prisma.sesi.create({
+    data: {
+      nama: "Sesi 7 (23.00 - 01.00)",
       harga: 85000
     },
   });
 
   // Buat additional
-  const additionalMakeup = await prisma.additional.create({
+  const senargitar = await prisma.additional.create({
     data: {
-      nama: "Makeup",
+      nama: "Senar Gitar",
+      harga: 10000,
+    },
+  });
+
+  const senarbass = await prisma.additional.create({
+    data: {
+      nama: "Senar bass",
       harga: 50000,
     },
   });
-
-  const additionalHairdo = await prisma.additional.create({
+  const pickgitar = await prisma.additional.create({
     data: {
-      nama: "Hairdo",
+      nama: "5000",
       harga: 75000,
     },
   });
-
-  // Buat transaksi
-  const transaksi = await prisma.transaksi.create({
+  const stickdrum = await prisma.additional.create({
     data: {
-      user_id: user.user_id,
-      total_harga: 300000,
-      nama_customer: "John Doe",
-      tanggal_transaksi: new Date(),
-      nomor_telepon: "081234567890",
-      catatan: "Bawa gitar sendiri",
-      metode_bayar: "DP",
-      jumlah_bayar: 100000,
-      sisa_bayar: 200000,
-      status_studio: "Sudah Booking",
-      status_bayar: "Belum Lunas",
+      nama: "Stick Drum",
+      harga: 25000,
     },
   });
-
-  // Tambahkan detail transaksi
-  const detailTransaksi = await prisma.detail_Transaksi.create({
+  const airputih = await prisma.additional.create({
     data: {
-      transaksi_id: transaksi.transaksi_id,
-      // nama_layanan_item: "Sewa Studio",
-      subtotal: 150000,
-      jumlah: 1,
-      // sesi: "Sesi 1 (09.00 - 12.00)",
+      nama: "Air Putih",
+      harga: 5000,
     },
   });
-
-  // Tambahkan sesi ke detail transaksi
-  const today = new Date();
-  await prisma.detail_Transaksi_Sesi.createMany({
-    data: [
-      {
-        detail_transaksi_id: detailTransaksi.detail_transaksi_id,
-        sesi_id: sesiPagi.sesi_id,
-        tanggal_sesi: today,
-      },
-      {
-        detail_transaksi_id: detailTransaksi.detail_transaksi_id,
-        sesi_id: sesiSore.sesi_id,
-        tanggal_sesi: today,
-      },
-    ],
-  });
-
-  // Tambahkan additional ke detail transaksi
-  await prisma.detail_Additional.createMany({
-    data: [
-      {
-        detail_transaksi_id: detailTransaksi.detail_transaksi_id,
-        additional_id: additionalMakeup.additional_id,
-        jumlah: 1,
-      },
-      {
-        detail_transaksi_id: detailTransaksi.detail_transaksi_id,
-        additional_id: additionalHairdo.additional_id,
-        jumlah: 2,
-      },
-    ],
-  });
-
-  // Tambahkan presensi user
-  await prisma.presensi.create({
+  const teh = await prisma.additional.create({
     data: {
-      userId: user.user_id,
-      status: "Hadir",
-      clock_in: new Date(),
-      clock_out: new Date(),
+      nama: "Teh",
+      harga: 5000,
+    },
+  });
+  const kopi = await prisma.additional.create({
+    data: {
+      nama: "Kopi",
+      harga: 5000,
     },
   });
 
